@@ -1,0 +1,664 @@
+import numpy as np
+import math
+import glob
+
+from docplex.mp.model import Model
+from time import time
+import sys
+
+
+
+
+
+
+def _create_variables():
+
+    x = []
+    y = []
+    Tijkt = []
+    Ttot = []
+    Tikt = []
+    delta = []
+    alpha = []
+    wi = []
+    wik = []
+    zri = []
+    eik = []
+    vmktjkn = []
+    gammavri = []
+    for i in range(nproductions):
+        xi = []
+        for j in range(nsales):
+            xj = []
+            for k in range(ntimes):
+                xk = []
+                for n in range(nprods):
+                    xk.append(cpmod.integer_var(0, name="x" + str(i) + str(j) + str(k) + str(n)))
+                xj.append(xk)
+            xi.append(xj)
+        x.append(xi)
+
+    for i in range(nproductions):
+        ti = []
+        for j in range(nsales):
+            tj = []
+            for k in range(ntimes):
+                tk = []
+                for t in range(ntrucks):
+                    tk.append(cpmod.integer_var(0, name="T" + str(i) + str(j) + str(k) + str(t)))
+                tj.append(tk)
+            ti.append(tj)
+        Tijkt.append(ti)
+
+    for i in range(nproductions):
+        ti = []
+        for k in range(ntimes):
+            tk = []
+            for t in range(ntrucks):
+                tk.append(cpmod.integer_var(0, name="T" + str(i) + str(k) + str(t)))
+            ti.append(tk)
+        Tikt.append(ti)
+    for i in range(nsales):
+        delta.append(cpmod.binary_var(name="delta"+str(i)))
+    for i in range(nproductions):
+        alpha.append(cpmod.binary_var(name="alpha"+str(i)))
+    for t in range(ntrucks):
+        Ttot.append(cpmod.integer_var(lb = 0, name = "Ttot"+str(t)))
+    for i in range(nsales):
+        wi.append(cpmod.integer_var(0, name = "wfix"+str(i)))
+        wj = []
+        for j in range(ntimes):
+            wj.append(cpmod.integer_var(0, name = "wvar"+str(i)+str(j)))
+        wik.append(wj)
+    for j in range(nsales):
+        yk = []
+        for k in range(ntimes):
+            yn = []
+            for n in range(nprods):
+                yn.append(cpmod.integer_var(0,name = "yjkn"+str(j)+str(k)+str(n)))
+            yk.append(yn)
+        y.append(yk)
+
+    for r in range(nrawmaterials):
+        zi = []
+        for i in range(nproductions):
+            zi.append(cpmod.continuous_var(0, name = "zri"+str(r)+str(i)))
+        zri.append(zi)
+    for v in range(nvendors):
+        gammav = []
+        for r in range(nrawmaterials):
+            zi = []
+            for i in range(nproductions):
+                zi.append(cpmod.binary_var( name="gammavri" + str(v)+str(r) + str(i)))
+            gammav.append(zi)
+        gammavri.append(gammav)
+    for i in range(nproductions):
+        ek = []
+        for k in range(ntimes):
+            ek.append(cpmod.continuous_var(0, name = "eik"+str(i)+str(k)))
+        eik.append(ek)
+
+    for m in range(nmkts):
+        vj = []
+        for j in range(nsales):
+            vk = []
+            for k in range(ntimes):
+                vn =  []
+                for n in range(nprods):
+                    vn.append(cpmod.integer_var(0,name = "vmktjkn"+str(m)+str(j)+str(k)+str(n)))
+                vk.append(vn)
+            vj.append(vk)
+        vmktjkn.append(vj)
+
+    S =[]
+    for m in range(nmkts):
+        sk = []
+        for k in range(ntimes):
+            sk.append(cpmod.continuous_var(0,name="Smk"+str(m)+str(k)))
+        S.append(sk)
+
+    aa = []
+    for i in range(nproductions):
+        aaj = []
+        for j in range(nproductions):
+            aak = []
+            for k in range(ntimes):
+                aat = []
+                for t in range(ntrucks):
+                    aat.append(cpmod.integer_var(0, name="AA" + str(i) + str(j) + str(k) + str(t)))
+                aak.append(aat)
+            aaj.append(aak)
+        aa.append(aaj)
+    T0 = []
+    for i in range(nproductions):
+        t0t = []
+        for t in range(ntrucks):
+            t0t.append(cpmod.integer_var(0,name = "T0it"+str(i)+str(t)))
+        T0.append(t0t)
+
+
+
+    return x, y, Tijkt, Ttot, Tikt, delta, alpha, wi, wik, zri, eik, vmktjkn, S, gammavri, aa, T0
+
+
+
+
+def _create_constraints():
+    #
+    for k in range(ntimes):
+        for t in range(ntrucks):
+            cpmod.add_constraint(Ttot[t] - cpmod.sum(Tijkt[i][j][k][t] for i in range(nproductions) for j in range(nsales))
+                                 >= 0)
+
+    for t in range(ntrucks):
+        cpmod.add_constraint(Ttot[t] - cpmod.sum(T0[i][t] for i in range(nproductions)) == 0)
+
+    dems = []
+
+
+    nseas = []
+    for m in range(nmkts):
+        demj = []
+        for j in range(nsales):
+            demk = []
+            nseask = []
+            for k in range(ntimes):
+                demn = []
+                amply = 1 + 50 * (season[j][k] - 1)
+                if amply < 0:
+                    amply = - amply
+                if m== 0:
+                    nseask.append(amply)
+                for n in range(nprods):
+                    val = 0
+                    if 2- p[m][n]/P[m][n] > 0:
+                        val = 2-p[m][n]/P[m][n]
+
+
+                    dem = amply*(M[j][n] * math.pow(val, a[m]) * (1 + b[m] * (0.5 * S[m][k] +
+                               cpmod.sum(vmktjkn[m1][j][k][nprods-1] for m1 in range(nmkts)))/1e5)*Q[m][k]/4.75)
+                    cpmod.add_constraint(vmktjkn[m][j][k][n] - dem<= 0)
+
+                    demn.append(dem)
+                demk.append(demn)
+            demj.append(demk)
+            if m== 0:
+                nseas.append(nseask)
+        dems.append(demj)
+
+    for j in range(nsales):
+        for k in range(ntimes):
+            cpmod.add_constraint(cpmod.sum(vmktjkn[m1][j][k][nprods-1] for m1 in range(nmkts)) >= cpmod.sum(x[i][j][k][nprods-1] for i in range(nproductions)  ))
+    for j in range(nsales):
+        cpmod.add_constraint(
+            cpmod.sum(
+                cpmod.sum(
+                    cpmod.sum(x[i][j][k][n] for n in range(nprods))
+                    for k in range(ntimes)
+                )
+                for i in range(nproductions)
+            )
+            - delta[j]*1e12 <= 0)
+
+
+
+    print(nseas)
+    cpmod.add_constraint( cpmod.sum(delta[j] for j in range(nsales) )<= 7)
+
+    for j in range(nproductions):
+        cpmod.add_constraint(
+            cpmod.sum(
+                cpmod.sum(
+                    cpmod.sum(x[j][i][k][n] for n in range(nprods))
+                    for k in range(ntimes)
+                )
+                for i in range(nsales)
+            )
+            - alpha[j]*1e12 <= 0)
+
+    for i in range(nproductions):
+        for k in range(ntimes):
+            cpmod.add_constraint(wi[i] + wik[i][k] - alpha[i] * ub[i] <= 0)
+            cpmod.add_constraint(wi[i] + wik[i][k] - alpha[i] * lb[i] >= 0)
+
+    quans=[]
+    for r in range(nrawmaterials):
+        quansi=[]
+        for i in range(nproductions):
+            quanri = cpmod.sum(x[i][j][k][n] * conversion_factor[r][n] for n in range(nprods) for k in range(ntimes) for j in
+                      range(nsales))
+            quansi.append(quanri)
+        quans.append(quansi)
+
+    for v in range(nvendors):
+        for r in range(nrawmaterials):
+            for i in range(nproductions):
+                cpmod.add_constraint(zri[r][i] - ar[r][v]*quans[r][i] - br[r][v] - (1-gammavri[v][r][i]) * 1e12 <= 0)
+                cpmod.add_constraint(zri[r][i] - ar[r][v]*quans[r][i] - br[r][v] + (1-gammavri[v][r][i]) * 1e12 >= 0)
+    for r in range(nrawmaterials):
+        for i in range(nproductions):
+            cpmod.add_constraint(cpmod.sum(gammavri[v][r][i] for v in range(nvendors)) == 1)
+
+    for i in range(nproductions):
+        for k in range(ntimes):
+            cpmod.add_constraint(eik[i][k] - aenergy[0]*cpmod.sum(
+                cpmod.sum( x[i][j][k][n]*energy_conversion[n][i] for n in range(nprods))
+                for j in range(nsales)
+            ) >= 0)
+            cpmod.add_constraint(eik[i][k] - aenergy[1] * cpmod.sum(
+                cpmod.sum(x[i][j][k][n] * energy_conversion[n][i] for n in range(nprods))
+                for j in range(nsales)
+            ) - energy_threshold[i]*(aenergy[0]-aenergy[1])>= 0)
+    for i in range(nproductions):
+        for k in range(ntimes):
+            cpmod.add_constraint( cpmod.sum(
+                cpmod.sum(x[i][j][k][n]*worktime[n][i] for n in range(nprods))
+                for j in range(nsales)
+            ) - hpermonth*(wi[i]+wik[i][k]) <= 0)
+    for j in range(nsales):
+        for k in range(1,ntimes):
+            for n in range(nprods-1):
+                cpmod.add_constraint( y[j][k][n] - y[j][k-1][n] + cpmod.sum(vmktjkn[m][j][k][n] for m in range(nmkts))
+                                      - cpmod.sum( x[i][j][k][n] for i in range(nproductions)) == 0)
+    for j in range(nsales):
+        for n in range(nprods):
+            k = 0
+            cpmod.add_constraint(y[j][k][n] + cpmod.sum(vmktjkn[m][j][k][n] for m in range(nmkts))
+                                 - cpmod.sum(x[i][j][k][n] for i in range(nproductions)) == 0)
+    for i in range(nproductions):
+        for k in range(1,ntimes):
+            for t in range(ntrucks):
+                cpmod.add_constraint(Tikt[i][k][t] - Tikt[i][k - 1][t] + cpmod.sum(aa[i][ii][k][t] for ii in range(nproductions))
+                                     - cpmod.sum(aa[jj][i][k][t] for jj in range(nproductions))== 0)
+    #for k in range(ntimes):
+     #   for t in range(ntrucks):
+      #      cpmod.add_constraint(cpmod.sum(cpmod.sum(dd[i][ii][k][t] for i in range(nproductions)) for ii in range(nproductions))
+       #                          - cpmod.sum(cpmod.sum(aa[jj][j][k][t] for j in range(nproductions)) for jj in range(nproductions))
+        #                         ==0)
+    for i in range(nproductions):
+        for t in range(ntrucks):
+            k = 0
+            cpmod.add_constraint(
+                Tikt[i][k][t]- T0[i][t] + cpmod.sum(aa[i][ii][k][t] for ii in range(nproductions))
+                - cpmod.sum(aa[ii][i][k][t] for ii in range(nproductions)) == 0)
+    for i in range(nproductions):
+        for j in range(nsales):
+            for k in range(ntimes):
+                cpmod.add_constraint(
+                    cpmod.sum(Tijkt[i][j][k][t]*truck_volume[t] for t in range(ntrucks)) -
+                    cpmod.sum(x[i][j][k][n]*volume[n] for n in range(nprods)) >= 0
+                )
+    for i in range(nproductions):
+        for k in range(ntimes):
+            for t in range(ntrucks):
+                cpmod.add_constraint( Tikt[i][k][t] - cpmod.sum(Tijkt[i][j][k][t] for j in range(nsales)) >= 0)
+    for i in range(nproductions):
+        for k in range(ntimes):
+            for t in range(ntrucks):
+                cpmod.add_constraint(aa[i][i][k][t] == 0)
+    return dems, quans
+
+
+
+
+def _create_params():
+    hpermonth = 20 * 8;
+    worktime = [[.05, .1, .1],
+                [.1, .15, .15],
+                [.1, .15, .1],
+                [.1, .1, .1],
+                [.02, .02, .02]];
+    fixedpaycheck = [1500, 1200, 1250];
+    variablepaycheck = [1900, 1600, 1650];
+    lb = [15, 20, 15];
+    ub = [3000, 2500, 2720];
+
+    volume = [.6, .3, .8, .4, .01];
+    transp_cost = [[9, 4, 3, 13, 15, 17, 3, 11], [5, 9, 8, 4, 10, 5, 9, 2], [6, 5, 12, 14, .5, 7, 10, 7]];
+    reloc_cost = [100, 500, 2500, 6000];
+    truck_cost = [25000, 350000, 600000, 10000000];
+    activation_truck_cost = [[110, 150, 170, 270], [100, 170, 170, 290], [70, 120, 150, 310]];
+    truck_volume = [280, 5200, 10000, 200000];
+
+    conversion_factor = [[.1, .5, .2, .1, .2], [1, 1, 1.3, .8, 0], [1, 2, 1.4, .5, 0], [.1, .3, .1, .1, 0]];
+    ar = [[0.6, 0.5, 0.3, 0.225],
+          [9.6, 8, 5, 3.75],
+          [2.04, 1.7, 1, 0.75],
+          [1.08, 0.9, 0.6, 0.45]]
+    br = [[0,	1479.865,	5919.46,	4439.595],
+          [0,	150097.6,	562866,	469055],
+          [0,	60187.48,	247830.8,	177022],
+          [0,	2836.008,	9453.36,	9453.36]]
+
+
+    energy_conversion = [[.5, .7, .7], [.7, .9, 1], [.6, .8, .9], [.5, .7, .7], [.1, .1, .1]];
+    aenergy = [.1, .2];
+    energy_threshold = [56286.7, 6940.54, 8100.66];
+
+    fixedsales = [20000, 18000, 10000, 9000, 12000, 15000, 22000, 13000];
+    fixedproductions = [80000, 60000, 65000];
+
+
+    inventory_cost_param = [[1.6, 0.6, 1.6, 0.8, .02],
+                        [2.4, 1.2, 3.2, 1.6, .04],
+                        [1.8, .9, 2.4, 1.2, .03],
+                        [.6, .3, .8, .4, .01],
+                        [1.8, .9, 2.4, 1.2, .03],
+                        [.9, .45, 1.2, .6, .015],
+                        [1.5, .75, 2, 1, .025],
+                        [2.1, 1.05, 2.8, 1.4, .035]];
+
+    M = [
+    [1128.2, 1482.93, 1122.46, 1498.08, 1111.23],
+    [1257.75, 1011.23, 1489.42, 1318.78, 1088.28],
+    [1215.82, 1147.99, 1479.57, 1286.38, 1187.62],
+    [1187.62, 1023.14, 1027, 1354.04, 1454.82],
+    [1454.82, 1248.89, 1107.56, 1000.04, 1475.92],
+    [1475.92, 1008.76, 1318.78, 1088.28, 1147.99],
+    [1147.99, 1479.57, 1286.38, 1187.62, 1023.14],
+    [1023.14, 1027, 1354.04, 1454.82, 1248.89]];
+    P = [[35, 25, 45, 30, 1], [45, 30, 55, 40, 1]];
+    a = [1.6, 1.5];
+    Q = [[8, 10, 8, 6, 3, 1], [1, 3, 6, 10, 10, 5]];
+    b = [.05, .1];
+
+    season = [] #jk
+    for j in range(nsales):
+        seak =[]
+        for k in range(ntimes):
+            val = 1+(math.pow(-1,j))*(math.pow(j-5,2)/1e2)*(-math.pow(k-3,2)/1e2)
+            seak.append(val)
+        season.append(seak)
+
+    return season,hpermonth, worktime, fixedpaycheck, variablepaycheck, lb, ub, volume, transp_cost, reloc_cost, truck_cost, activation_truck_cost, truck_volume, conversion_factor,ar, br, energy_conversion, aenergy, energy_threshold, fixedsales,fixedproductions, inventory_cost_param,M, P, a, Q, b
+
+
+
+
+def _create_objective():
+    obj = cpmod.linear_expr()
+    revenues = cpmod.sum(
+                        vmktjkn[m][j][k][n]*p[m][n] for n in range(nprods)
+
+                    for k in range(ntimes)
+
+                for j in range(nsales)
+
+            for m in range(nmkts)
+        )
+
+
+    trucksactivationcost=-(
+        cpmod.sum(
+            cpmod.sum(
+                cpmod.sum(
+                    cpmod.sum(
+                        Tijkt[i][j][k][t]*activation_truck_cost[i][t] for t in range(ntrucks)
+                    )
+                    for k in range(ntimes)
+                )
+                for j in range(nsales)
+            )
+            for i in range(nproductions)
+        )
+    )
+
+    transportationcost = -(
+        cpmod.sum(
+            cpmod.sum(
+                cpmod.sum(
+                    cpmod.sum(
+                        x[i][j][k][n] * volume[n]*transp_cost[i][j] for n in range(nprods)
+                    )
+                    for k in range(ntimes)
+                )
+                for j in range(nsales)
+            )
+            for i in range(nproductions)
+        )
+
+    )
+
+    rawmaterialcost = -(
+        cpmod.sum(
+            cpmod.sum(
+                zri[r][i] for r in range(nrawmaterials)
+            )
+            for i in range(nproductions)
+        )
+    )
+
+    energycost = -(
+        cpmod.sum(
+            cpmod.sum(
+                eik[i][k] for k in range(ntimes)
+            )
+            for i in range(nproductions)
+        )
+    )
+    truckcost = -(
+        cpmod.sum(
+            Ttot[t]*truck_cost[t] for t in range(ntrucks)
+        )
+    )
+    relocationcost = -(
+        cpmod.sum(
+            cpmod.sum(
+                cpmod.sum(
+                    cpmod.sum(
+                        aa[i][ii][k][t] * reloc_cost[t] for t in range(ntrucks)
+                    )
+                    for k in range(ntimes)
+                )
+                for ii in range(nproductions)
+            )
+            for i in range(nproductions)
+        )
+    )
+
+    workerscostvar = -(
+        cpmod.sum(
+            cpmod.sum(
+                wik[i][k]*variablepaycheck[i] for k in range(ntimes)
+            )
+            for i in range(nproductions)
+        )
+    )
+
+    workerscostfix = -(
+        cpmod.sum(
+            wi[i] * fixedpaycheck[i] * ntimes for i in range(nproductions)
+        )
+    )
+    deltacost = -(
+        cpmod.sum(
+            delta[i] * fixedsales[i] for i in range(nsales)
+        )
+    )
+    alphacost = -(
+        cpmod.sum(
+            alpha[i] * fixedproductions[i] for i in range(nproductions)
+        )
+    )
+
+    inventorycost = -(
+        cpmod.sum(
+            cpmod.sum(
+                cpmod.sum(
+                    y[j][k][n]*inventory_cost_param[j][n] for n in range(nprods)
+                )
+                for k in range(ntimes)
+            )
+            for j in range(nsales)
+        )
+    )
+
+    investmentscost = -cpmod.sum( S[m][k] for m in range(nmkts) for k in range(ntimes))
+    obj = investmentscost+revenues + relocationcost +alphacost+deltacost+inventorycost+workerscostvar+workerscostfix+truckcost+ energycost + rawmaterialcost+transportationcost+trucksactivationcost
+    cpmod.maximize(obj)
+    #cpmod.minimize(obj)
+    #cpmod.add_constraint(obj >= -1e12)
+    return revenues, relocationcost,alphacost,deltacost,inventorycost,workerscostvar,workerscostfix,truckcost, energycost,rawmaterialcost,transportationcost,trucksactivationcost, investmentscost
+
+
+def _write():
+    path = "/home/giorgio/IdeaProjects/NewMarinero/Input/"
+    quantities = open(path+"quantities.txt",  "w")
+    for k in range(ntimes):
+        for i in range(nproductions):
+            s = ""
+            for n in range(nprods):
+                for j in range(nsales):
+                    s = s + " "+str(x[i][j][k][n].solution_value)
+            quantities.write(s+" \n")
+    quantities.close()
+
+    trucks = open(path+"trucks.txt","w")
+    for k in range(ntimes):
+        for i in range(nproductions):
+            s = ""
+            for t in range(ntrucks):
+                for j in range(nsales):
+                    s = s + " "+ str(Tijkt[i][j][k][t].solution_value)
+            trucks.write(s+" \n")
+    trucks.close()
+
+    tspots = open(path+"truck_spots.txt","w")
+    for i in range(nproductions):
+        for t in range(ntrucks):
+            s = ""
+            for k in range(ntimes):
+                #print(len(Tikt[i][k][t]))
+                s = s+" "+str(Tikt[i][k][t].solution_value)
+            tspots.write(s+" \n")
+    tspots.close()
+
+    prices = open(path+"prices.txt", "w")
+    for m in range(nmkts):
+        s = ""
+        for n in range(nprods):
+            s=s+" "+str(p[m][n])
+        prices.write(s+" \n")
+    prices.close()
+
+    workers = open(path+"workers.txt","w")
+    for i in range(nproductions):
+        s = ""
+        for k in range(ntimes+1):
+            if k==0:
+                s = s+" "+str(wi[i].solution_value)
+            else:
+                s = s+" "+str(wik[i][k-1].solution_value)
+        workers.write(s+" \n")
+    workers.close()
+
+    investments = open(path+"investments.txt","w")
+    for m in range(nmkts):
+        s=""
+        for k in range(ntimes):
+            s = s+" "+str(S[m][k].solution_value)
+        investments.write(s+" \n")
+    investments.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+nprods = 5
+nproductions = 3
+nsales = 8
+ntrucks = 4
+ntimes = 6
+nmkts = 2
+nvendors = 4
+nrawmaterials = 4
+
+season, hpermonth, worktime, fixedpaycheck, variablepaycheck, lb, ub, \
+volume, transp_cost, reloc_cost, truck_cost, activation_truck_cost, \
+truck_volume, conversion_factor, ar, br, energy_conversion, aenergy, \
+energy_threshold, fixedsales, fixedproductions, inventory_cost_param, M, P, a, Q, b = _create_params()
+
+# objs = []
+# bestobj = 0
+# bestp = []
+# gap =[1, .5, .8]
+# for dist in range(3):
+#     for ind in range(3):
+#         p = []
+#         for m in range(nmkts):
+#             pn = []
+#             for n in range(nprods):
+#                 pn.append(np.random.uniform(P[m][n]*(1-(gap[dist])), P[m][n]*(1+gap[dist])))
+#             p.append(pn)
+#
+#         cpmod = Model(name="BUGelato")
+#         x, y, Tijkt, Ttot, Tikt, delta, alpha, wi, wik, zri, eik, vmktjkn, S, gammavri, dd, aa, T0 = _create_variables()
+#         # p = P #todo prices' choice is external
+#         _create_constraints()
+#         _create_objective()
+#         sol = cpmod.solve(log_output=False)
+#         # cpmod.print_solution()
+#         # print(cpmod.export_as_lp_string())
+#         solval = sol.objective_value
+#         print(solval)
+#         objs.append(solval)
+#         if solval > bestobj:
+#             bestobj = solval
+#             bestp = p
+#         print("dist",dist,"ind",ind)
+# objs.sort()
+# for elem in objs:
+#     print(elem)
+# print("bestobj:" + str(bestobj))
+# print("bestp: ",bestp)
+
+
+#p = bestp
+p = [[35, 25, 45, 30, 0], [45, 30, 55, 40, 0]];
+cpmod = Model(name="BUGelato")
+x, y, Tijkt, Ttot, Tikt, delta, alpha, wi, wik, zri, eik, vmktjkn, S, gammavri, aa, T0 = _create_variables()
+# p = P #todo prices' choice is external
+
+dems, quans = _create_constraints()
+revenues, relocationcost,alphacost,deltacost,inventorycost,workerscostvar,workerscostfix,\
+truckcost, energycost,rawmaterialcost,transportationcost,trucksactivationcost, investmentcost = _create_objective()
+cpmod.set_time_limit(20)
+sol = cpmod.solve(log_output=True)
+cpmod.print_solution()
+print(cpmod.export_as_lp_string())
+solval = sol.objective_value
+print("______________________________________________")
+print("objective: ", solval)
+print("______________________________________________")
+print("revenue", revenues.solution_value)
+print("rawmaterial", rawmaterialcost.solution_value)
+print("energycost", energycost.solution_value)
+print("alphacost", alphacost.solution_value)
+print("transportationcost", transportationcost.solution_value)
+print("trucksactivationcost", trucksactivationcost.solution_value)
+print("truckcost", truckcost.solution_value)
+print("relocationcost", relocationcost.solution_value)
+print("inventorycost", inventorycost.solution_value)
+#print("deltacost", deltacost.solution_value)
+#print("investmentcost", investmentcost.solution_value)
+
+_write()
+
+
+
+
+
+
+

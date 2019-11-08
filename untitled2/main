@@ -1,0 +1,458 @@
+import numpy as np
+import math
+import glob
+
+from docplex.mp.model import Model
+from time import time
+import sys
+
+def f(solution, C):
+    ret = []
+    for i in range(len(C)):
+        ret.append(sum(solution[j]*C[i,j] for j in range(len(solution))))
+    ret = np.asarray(ret)
+    return ret
+
+def transform_solution( variables, solution):
+    if solution == None:
+        return []
+    ret = []
+    for var in variables:
+        ret.append(solution.get_value(var))
+    return np.asarray(ret)
+
+def HBB(C, A, b, vartype, omega, lb, ub, inteps):
+    U = []
+    I = []
+    localNadir = [(sys.float_info.max/1e10, sys.float_info.max/1e10)]
+    cpmod, variables, objectives = getCplexModel(C, A, b, vartype, omega, lb, ub)
+    constraints = []
+    nodes = 0
+
+    P = []
+    P.append(constraints)
+
+    while len(P) > 0 :
+        nodes += 1
+        #print("=================================")
+        if nodes % 100 == 0:
+            print(nodes," sizeU",len(U), " sizeP", len(P))
+        lo = False
+        jcons = P.pop(0)
+        jadded = addConstraints(cpmod, jcons)
+
+        #print(cpmod.export_as_lp_string())
+        solution = transform_solution(variables, cpmod.solve(log_output=False))
+        if lo:
+            print("------------------------------")
+            print(solution)
+        if len(solution) == 0:
+            remove_constraints(cpmod, jadded)
+            continue
+        y = f(solution, C)
+        #print("y",y)
+        #print(len(jadded))
+
+        dom = checkdominance(localNadir, y, C, omega)
+        integ = checkIntegrality( solution, inteps )
+        #print(solution)
+        #print("dom",dom,"integ",integ)
+        if not dom and integ:
+            #print("integer branching")
+            localNadir = local_nadir_update(localNadir,y)
+            U.append(y)
+            I.append((y, solution))
+            branches = integer_branching(y, C,  variables, cpmod)
+            #print("branches",branches)
+
+            newP = []
+            for cons in P:
+                for br in branches:
+                    supcons = cons.copy()
+                    supcons.append(br)
+                    newP.append(supcons)
+
+
+            for br in branches:
+                supjcons = jcons.copy()
+                supjcons.append(br)
+                newP.append(supjcons)
+
+            P = newP
+        upperdom, u = find_dominating(U,y)
+        if not dom and upperdom:
+            #print("pareto branching")
+            branches = integer_branching( u, C, variables, cpmod) #this is actually Pareto branching
+
+            newP = []
+            for cons in P:
+                for br in branches:
+                    supcons = cons.copy()
+                    supcons.append(br)
+                    newP.append(supcons)
+
+            for br in branches:
+                supjcons = jcons.copy()
+                supjcons.append(br)
+                newP.append(supjcons)
+
+            P = newP
+
+        elif not integ and not dom  :
+            #print("standard branching")
+
+            i = select_index(A, b, solution, C, y, omega)
+            #print("i",i, "sum",sum(y[ll] for ll in range(len(y))))
+            branches = branchOn(i, solution, variables)
+            for br in branches:
+                supjcons = jcons.copy()
+                supjcons.append(br)
+                P.append(supjcons)
+
+
+        remove_constraints(cpmod,jadded)
+
+    return U, I, nodes
+
+def addConstraints(cpmod, jcons):
+    jadded = []
+    i = 0
+    for elem in jcons:
+        name = "added"+str(i)
+        cpmod.add_constraint(elem[0] <= elem[1], ctname=name)
+        jadded.append(name)
+        i += 1
+    return jadded
+
+def remove_constraints(cpmod,jadded):
+    if jadded == None:
+        return
+    for nm in jadded:
+        cpmod.remove_constraint(nm)
+
+def checkdominance(localNadir, y, C, omega):
+
+
+    value = sum( omega[i]*y[i] for i in range(len(y)))
+    for nd in localNadir:
+        ndvalue = sum( omega[i]*nd[i] for i in range(len(nd)))
+        #print("ndvalue",ndvalue,"value",value)
+        if ndvalue >= value:
+            #print(ndvalue," ", value, "   -",nd[0],"__",nd[1])
+            return False
+    #print("localNadir: ",localNadir,"y: ",y)
+    return True
+
+
+def checkIntegrality( solution, eps ):
+    for sol in solution:
+        if abs( sol - round(sol)) >= eps:
+            return False
+    return True
+
+
+def integer_branching(y, C,  variables, cpmod):
+    branches = []
+    for i in range(len(y)):
+        lhs = sum(variables[j]*C[i,j] for j in range(len(variables)))
+        rhs = y[i] - 1 #gamma = 1
+        branches.append( (lhs, rhs))
+    return branches
+
+def  find_dominating(U,y):
+    for u in U:
+        check1 = sum((u[i] > y[i]) for i in range(len(y)))
+        if check1 == 0:
+            check2 = sum((ui < yi) for ui,yi in zip(u,y))
+            if check2 > 0:
+                return True,u
+    return False, None
+
+
+def local_nadir_update(LN,y):
+    #print("localNadirPRE", LN)
+    #print("Y",y)
+    if len(LN) == 1:
+        u = LN[0]
+        newLN = []
+        pointa = (u[0], y[1])
+        pointb = (y[0], u[1])
+        newLN.append(pointa)
+        newLN.append(pointb)
+        #print("localNadirPOST", newLN)
+        return newLN
+
+    newLN = sorted(LN)
+    #print("SORTEDLN",newLN)
+    A = []
+    B = []
+    UA = []
+    i = 0
+    for a in newLN:
+        if a[0]>y[0] and a[1]>y[1]:
+            A.append(a)
+        else:
+            UA.append(a)
+        i += 1
+    for a in UA:
+        if a[0]>=y[0] and a[1]>=y[1] :
+            B.append(a)
+    P = []
+
+    #print("A",A)
+   # print("B",B)
+    #print("UA",UA)
+
+
+    for u in A:
+        pointa = (u[0], y[1])
+        pointb = (y[0], u[1])
+        P.append(pointa)
+        P.append(pointb)
+
+    nP = []
+
+    for i in range(len(P)):
+        check = True
+        for j in range(len(P)):
+            if i != j and P[i][0]>=P[j][0] and P[i][1] >= P[j][1]:
+                check = False
+                break
+
+        secondcheck = True
+        if check:
+            for b in B:
+                if P[i][0]>=b[0] and P[i][1] >= b[1]:
+                    secondcheck = False
+                    break
+        if check and secondcheck:
+            nP.append(P[i])
+    P = nP.copy()
+    for u in UA:
+        P.append(u)
+    #print("localNadirPOST",P)
+    return P
+
+
+def  select_index(A, b, solution, C, y, omega):
+    for i in range(len(solution)):
+        component = solution[i]
+        if abs(round(component) - component) >= 1e-7:
+            return i
+    raise Exception("this solution appears to be integer but we are checking fractionality")
+
+
+def branchOn(i, solution, variables):
+    ceilval = np.ceil(solution[i])
+    floorval = np.floor(solution[i])
+    branches = []
+    lhsa = -1*variables[i]
+    lhsb = variables[i]
+    pa = (lhsa, -ceilval)
+    pb = (lhsb, floorval)
+    branches.append(pa)
+    branches.append(pb)
+    return branches
+
+
+def getCplexModel(C, A, rhs, varType, omega, lb , ub ):
+    cpmod = Model(name = "cpmod")
+    variables = []
+    objectives = []
+    for i in range(len(varType)):
+        type = varType[i]
+        if type == "i":
+            variables.append(cpmod.integer_var(lb=lb[i], ub=ub[i], name="i"+str(i)))
+        elif type == "b":
+            variables.append(cpmod.binary_var(name="b"+str(i)))
+        elif type == "c":
+            variables.append(cpmod.continuous_var(lb=lb[i], ub=ub[i],name="c"+str(i)))
+
+    for i in range(len(C)):
+        objectives.append(cpmod.sum(variables[j]*C[i,j] for j in range(len(variables))))
+
+    cpmod.minimize( cpmod.sum(omega[i]*objectives[i] for i in range(len(omega))))
+
+    for i in range(len(A)):
+        lhs = cpmod.sum(variables[j]*A[i,j] for j in range(len(variables)))
+        cpmod.add_constraint(lhs >= rhs[i])
+
+    return cpmod, variables, objectives
+
+
+
+def STIDSEN(C, A, b, vartype, omega, lb, ub, inteps):
+    U = []
+    I = []
+    localNadir = [(sys.float_info.max/1e10, sys.float_info.max/1e10)]
+    cpmod, variables, objectives = getCplexModel(C, A, b, vartype, omega, lb, ub)
+    constraints = []
+    nodes = 0
+    P = []
+    P.append(constraints)
+
+    while len(P) > 0 :
+        nodes += 1
+        if nodes % 100 == 0:
+            print(nodes," sizeU",len(U)," sizeP",len(P))
+        #print("=================================")
+        lo = False
+        jcons = P.pop()
+        jadded = addConstraints(cpmod, jcons)
+
+        #print(cpmod.export_as_lp_string())
+        solution = transform_solution(variables, cpmod.solve(log_output=False))
+        if lo:
+            print("------------------------------")
+            print(solution)
+        if len(solution) == 0:
+            remove_constraints(cpmod, jadded)
+            continue
+        y = f(solution, C)
+        #print("y",y)
+        #print(len(jadded))
+
+        dom = checkdominance(localNadir, y, C, omega)
+        integ = checkIntegrality( solution, inteps )
+        #print("dom",dom,"integ",integ)
+        if not dom and integ:
+            #print("integer branching")
+            localNadir = local_nadir_update(localNadir,y)
+            U.append(y)
+            I.append((y, solution))
+            branches = integer_branching(y, C,  variables, cpmod)
+            #print("branches",branches)
+
+
+            for br in branches:
+                jcopy = jcons.copy()
+                jcopy.append(br)
+                P.append(jcopy)
+        upperdom, u = find_dominating(U,y)
+        if not dom and upperdom:
+            #print("pareto branching")
+            branches = integer_branching( u, C, variables, cpmod) #this is actually Pareto branching
+
+
+            for br in branches:
+                supjcons = jcons.copy()
+                supjcons.append(br)
+                P.append(supjcons)
+
+
+
+        elif not integ and not dom :
+            #print("standard branching")
+
+            i = select_index(A, b, solution, C, y, omega)
+            branches = branchOn(i, solution, variables)
+            for br in branches:
+                supjcons = jcons.copy()
+                supjcons.append(br)
+                P.append(supjcons)
+
+
+        remove_constraints(cpmod,jadded)
+
+    return U, I, nodes
+
+def filterU(U):
+    lU = []
+    for i in range(len(U)):
+        check = True
+        u = U[i]
+        for j in range(len(U)):
+            if i != j:
+                v = U[j]
+                if v[0]<=u[0] and v[1] <= u[1]:
+                    check = False
+
+        if check:
+            lU.append(u)
+    return lU
+
+##########################################
+
+path = "/home/giorgio/Desktop/Codici_FPA-BBM-Istanze/ILP/*.dat"
+
+mylist = [f for f in glob.glob(path)]
+indmax = 10
+indmax = indmax if (len(mylist) > indmax) else len(mylist)
+
+import re
+index = 0
+ind2 = 0
+
+
+stats = open("/home/giorgio/Desktop/Codici_FPA-BBM-Istanze/ILP/statsHMM.csv", 'a+')
+stats.write( "Problem, size_U_HBB, Time_HBB, nodes_HBB, size_U_STIDSEN, Time_STIDSEN, nodes_STIDSEN\n")
+stats.close()
+
+
+while True:
+    stats = open("/home/giorgio/Desktop/Codici_FPA-BBM-Istanze/ILP/statsHMM.csv", 'a+')
+    if index >= indmax:
+        break
+    index += 1
+    filepath = mylist[ind2]
+    ind2 += 1
+    print(ind2,"  ",filepath)
+
+    if( int(filepath[59:61]) > 20 or filepath[61]=='0'):
+        index -= 1
+        continue
+    print("PROCESSING...", filepath)
+    file = open(filepath, 'r')
+    content = file.readlines()
+    nobj = int(content[0][0])
+    n = int(content[1][0:len(content[1])])
+    m = int(content[2][0:len(content[2])])
+
+
+    C = []
+    gg = re.findall("\d+", content[3])
+    C.append([int(g) for g in gg])
+    gg = re.findall("\d+", content[4])
+    C.append([int(g) for g in gg])
+
+    A = []
+    for ind in range(3+nobj, 3+nobj+m):
+        gg = re.findall("\d+", content[ind])
+        A.append([int(g) for g in gg])
+    gg = re.findall("\d+", content[3+nobj+m])
+    rhs = [int(g) for g in gg]
+
+    lb = [0 for i in range(n)]
+    ub = [sys.float_info.max/(n+1) for i in range(n)]
+    vartype = ['c' for i in range(n)]
+    omega = [1,1]
+
+    file.close()
+
+    lb = np.asarray(lb)
+    ub = np.asarray(lb) + 1
+    omega = np.asarray(omega)
+    A = -1 * np.asarray(A)
+    rhs = -1 * np.asarray(rhs)
+    C = -1 * np.asarray(C)
+
+    start = time()
+    U, I, nodes = HBB(C, A, rhs, vartype, omega, lb, ub, 1e-9)
+    end = time()
+    fU = filterU(U)
+    print(fU)
+
+    starts = time()
+    Us, Is, nodess = STIDSEN(C, A, rhs, vartype, omega, lb, ub, 1e-9)
+    ends = time()
+    fUs = filterU(Us)
+    print(fUs)
+
+    print(nodes, "  vs  ", nodess)
+    print(str(end - start), "    vs    ", str(ends - starts))
+
+    stats.write( filepath+", "+str(len(fU))+", "+str(end-start)+", "+str(nodes)+", "+str(len(fUs))+", "+str(ends-starts)+", "+str(nodess)+"\n")
+    stats.close()
+
+
+
