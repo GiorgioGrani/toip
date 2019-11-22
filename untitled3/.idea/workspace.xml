@@ -2,46 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7ae581e5-871d-4d64-aff5-3db6056eb500" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/Nymeria.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/memory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Nymeria/rl.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Utilities/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Utilities/performance_profile.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../performance_profile.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/Balerion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/balerionmodel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/mainBalerion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/memory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled/train.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled1/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/.idea/untitled2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../untitled2/main" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/untitled3.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BUGelato" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Modello.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/esempio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dec_tree_MIO_a_list.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../dec_tree_MIO_a_list.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../prova.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../prova.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BUGelato" beforeDir="false" afterPath="$PROJECT_DIR$/BUGelato" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/untitled3$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1573205250010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/untitled3$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1574430357643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/untitled3$Unnamed__1_.coverage" NAME="Unnamed (1) Coverage Results" MODIFIED="1573205217083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="DatabaseView">
@@ -71,15 +33,15 @@
     <session id="-775495600">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.103" value="1" />
           <entry key="project.open.time.16" value="1" />
           <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.51" value="1" />
-          <entry key="project.open.time.56" value="1" />
+          <entry key="project.open.time.56" value="2" />
           <entry key="project.open.time.58" value="1" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="7" />
+          <entry key="project.opened" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -95,27 +57,35 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="BUGelato" value="13088" />
+          <entry key="BUGelato" value="13111" />
           <entry key="Python Console" value="86" />
           <entry key="py" value="1092" />
+          <entry key="txt" value="17" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="14266" />
+          <entry key="PLAIN_TEXT" value="17" />
+          <entry key="Python" value="14289" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.vcs.git.usages">
+        <counts>
+          <entry key="git.branch.create.new" value="1" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BUGelato">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="472">
-              <caret line="499" column="5" selection-start-line="499" selection-start-column="5" selection-end-line="499" selection-end-column="5" />
+            <state relative-caret-position="383">
+              <caret line="653" lean-forward="true" selection-start-line="653" selection-end-line="653" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#148#4060#0" />
               </folding>
             </state>
           </provider>
@@ -130,10 +100,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Modello.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
+            <state relative-caret-position="570">
               <caret line="38" selection-start-line="38" selection-end-line="38" />
               <folding>
                 <marker date="1572271024623" expanded="true" signature="50:55" ph="..." />
@@ -161,6 +131,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="master" />
+      </map>
+    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -177,11 +152,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="4">
     <option name="x" value="41" />
-    <option name="y" value="99" />
-    <option name="width" value="1389" />
-    <option name="height" value="654" />
+    <option name="y" value="25" />
+    <option name="width" value="700" />
+    <option name="height" value="875" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -282,15 +257,23 @@
       <option name="presentableId" value="Default" />
       <updated>1571388193780</updated>
     </task>
+    <task id="LOCAL-00001" summary="new_marinero">
+      <created>1573211183081</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1573211183081</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="41" y="25" width="1399" height="875" extended-state="6" />
+    <frame x="41" y="25" width="700" height="875" extended-state="4" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" weight="0.10273466" />
-      <window_info id="Structure" order="2" visible="true" weight="0.20103474" />
+      <window_info id="Structure" order="2" visible="true" weight="0.39908257" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.41342282" />
@@ -317,21 +300,15 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="new_marinero" />
+    <option name="LAST_COMMIT_MESSAGE" value="new_marinero" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/docplex/mp/error_handler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="209" selection-start-line="209" selection-end-line="209" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BUGelato">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="472">
-          <caret line="499" column="5" selection-start-line="499" selection-start-column="5" selection-end-line="499" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -344,10 +321,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Modello.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
+        <state relative-caret-position="570">
           <caret line="38" selection-start-line="38" selection-end-line="38" />
           <folding>
             <marker date="1572271024623" expanded="true" signature="50:55" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BUGelato">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="383">
+          <caret line="653" lean-forward="true" selection-start-line="653" selection-end-line="653" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#148#4060#0" />
           </folding>
         </state>
       </provider>

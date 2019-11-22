@@ -112,10 +112,10 @@ def _create_variables():
 
     S =[]
     for m in range(nmkts):
-        sk = []
-        for k in range(ntimes):
-            sk.append(cpmod.continuous_var(0,name="Smk"+str(m)+str(k)))
-        S.append(sk)
+        sj = []
+        for j in range(nsales):
+            sj.append(cpmod.continuous_var(0,name="Smj"+str(m)+str(j)))
+        S.append(sj)
 
     aa = []
     for i in range(nproductions):
@@ -175,7 +175,7 @@ def _create_constraints():
                         val = 2-p[m][n]/P[m][n]
 
 
-                    dem = amply*(M[j][n] * math.pow(val, a[m]) * (1 + b[m] * (0.5 * S[m][k] +
+                    dem = amply*(M[j][n] * math.pow(val, a[m]) * (1 + b[m] * (0.5 * S[m][j] +
                                cpmod.sum(vmktjkn[m1][j][k][nprods-1] for m1 in range(nmkts)))/1e5)*Q[m][k]/4.75)
                     cpmod.add_constraint(vmktjkn[m][j][k][n] - dem<= 0)
 
@@ -339,14 +339,14 @@ def _create_params():
     fixedproductions = [80000, 60000, 65000];
 
 
-    inventory_cost_param = [[1.6, 0.6, 1.6, 0.8, .02],
-                        [2.4, 1.2, 3.2, 1.6, .04],
-                        [1.8, .9, 2.4, 1.2, .03],
-                        [.6, .3, .8, .4, .01],
-                        [1.8, .9, 2.4, 1.2, .03],
-                        [.9, .45, 1.2, .6, .015],
-                        [1.5, .75, 2, 1, .025],
-                        [2.1, 1.05, 2.8, 1.4, .035]];
+    inventory_cost_param = [[1.6, 0.6, 1.6, 0.8, 1e7],
+                        [2.4, 1.2, 3.2, 1.6, 1e7],
+                        [1.8, .9, 2.4, 1.2, 1e7],
+                        [.6, .3, .8, .4, 1e7],
+                        [1.8, .9, 2.4, 1.2, 1e7],
+                        [.9, .45, 1.2, .6, 1e7],
+                        [1.5, .75, 2, 1, 1e7],
+                        [2.1, 1.05, 2.8, 1.4, 1e7]];
 
     M = [
     [1128.2, 1482.93, 1122.46, 1498.08, 1111.23],
@@ -555,8 +555,8 @@ def _write():
     investments = open(path+"investments.txt","w")
     for m in range(nmkts):
         s=""
-        for k in range(ntimes):
-            s = s+" "+str(S[m][k].solution_value)
+        for j in range(nsales):
+            s = s+" "+str(S[m][j].solution_value)
         investments.write(s+" \n")
     investments.close()
 
@@ -651,8 +651,8 @@ print("trucksactivationcost", trucksactivationcost.solution_value)
 print("truckcost", truckcost.solution_value)
 print("relocationcost", relocationcost.solution_value)
 print("inventorycost", inventorycost.solution_value)
-#print("deltacost", deltacost.solution_value)
-#print("investmentcost", investmentcost.solution_value)
+print("deltacost", deltacost.solution_value)
+print("investmentcost", investmentcost.solution_value)
 
 _write()
 
