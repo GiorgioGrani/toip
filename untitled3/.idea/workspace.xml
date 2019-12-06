@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7ae581e5-871d-4d64-aff5-3db6056eb500" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../untitled4/.idea/other.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../untitled4/builder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../untitled4/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../untitled4/toip.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BUGelato" beforeDir="false" afterPath="$PROJECT_DIR$/BUGelato" afterDir="false" />
     </list>
@@ -12,7 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/untitled3$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1574430357643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/untitled3$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1575487373087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/untitled3$Unnamed__1_.coverage" NAME="Unnamed (1) Coverage Results" MODIFIED="1573205217083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="DatabaseView">
@@ -35,13 +39,15 @@
         <counts>
           <entry key="project.closed" value="4" />
           <entry key="project.open.time.103" value="1" />
+          <entry key="project.open.time.140" value="1" />
           <entry key="project.open.time.16" value="1" />
           <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.51" value="1" />
           <entry key="project.open.time.56" value="2" />
+          <entry key="project.open.time.57" value="1" />
           <entry key="project.open.time.58" value="1" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="8" />
+          <entry key="project.opened" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -57,16 +63,16 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="BUGelato" value="13111" />
-          <entry key="Python Console" value="86" />
+          <entry key="BUGelato" value="14510" />
+          <entry key="Python Console" value="155" />
           <entry key="py" value="1092" />
-          <entry key="txt" value="17" />
+          <entry key="txt" value="32" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="17" />
-          <entry key="Python" value="14289" />
+          <entry key="PLAIN_TEXT" value="32" />
+          <entry key="Python" value="15757" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -81,11 +87,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BUGelato">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="653" lean-forward="true" selection-start-line="653" selection-end-line="653" />
+            <state relative-caret-position="272">
+              <caret line="722" column="34" lean-forward="true" selection-start-line="722" selection-start-column="7" selection-end-line="722" selection-end-column="34" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#148#4060#0" />
               </folding>
             </state>
           </provider>
@@ -103,7 +108,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Modello.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
+            <state relative-caret-position="517">
               <caret line="38" selection-start-line="38" selection-end-line="38" />
               <folding>
                 <marker date="1572271024623" expanded="true" signature="50:55" ph="..." />
@@ -127,6 +132,7 @@
       <find>vmktjkn</find>
       <find>y</find>
       <find>1e8</find>
+      <find>1e</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -152,31 +158,18 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="41" />
-    <option name="y" value="25" />
-    <option name="width" value="700" />
-    <option name="height" value="875" />
+    <option name="y" value="27" />
+    <option name="width" value="656" />
+    <option name="height" value="831" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="untitled3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="untitled3" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -264,29 +257,45 @@
       <option name="project" value="LOCAL" />
       <updated>1573211183081</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="new version 1.2">
+      <created>1574430440744</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1574430440744</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="41" y="25" width="700" height="875" extended-state="4" />
+    <frame x="41" y="25" width="1399" height="875" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" weight="0.10273466" />
-      <window_info id="Structure" order="2" visible="true" weight="0.39908257" />
+      <window_info id="Structure" order="2" visible="true" weight="0.1714708" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.41342282" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.16375838" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32885906" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32626426" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32626426" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.3261745" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.3261745" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -302,7 +311,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="new_marinero" />
-    <option name="LAST_COMMIT_MESSAGE" value="new_marinero" />
+    <MESSAGE value="new version 1.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="new version 1.2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/docplex/mp/error_handler.py">
@@ -321,7 +331,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Modello.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
+        <state relative-caret-position="517">
           <caret line="38" selection-start-line="38" selection-end-line="38" />
           <folding>
             <marker date="1572271024623" expanded="true" signature="50:55" ph="..." />
@@ -331,11 +341,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BUGelato">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="653" lean-forward="true" selection-start-line="653" selection-end-line="653" />
+        <state relative-caret-position="272">
+          <caret line="722" column="34" lean-forward="true" selection-start-line="722" selection-start-column="7" selection-end-line="722" selection-end-column="34" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#148#4060#0" />
           </folding>
         </state>
       </provider>
